@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="What's Not Working">
+<meta name="theme-color" content="#f5f0e8">
+<link rel="manifest" href="manifest.json">
+<title>What's Not Working?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-muted: #6b6b80;
+    --border: #e0d9ce;
+    --accent: #3b5bdb;
+    --accent-light: #e8edff;
+    --green: #2f9e44;
+    --green-light: #ebfbee;
+    --orange: #e67700;
+    --orange-light: #fff3bf;
+    --red: #c92a2a;
+    --red-light: #fff5f5;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --radius: 18px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overscroll-behavior: none;
+  }
+
+  #app {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--bg);
+    padding: 52px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .topbar.scrolled { border-color: var(--border); }
+  .topbar-inner { display: flex; align-items: center; gap: 10px; }
+  .back-btn {
+    width: 40px; height: 40px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .back-btn:active { transform: scale(0.92); background: var(--border); }
+  .topbar-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.2s ease; }
+  .screen.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── HOME ── */
+  #screen-home {
+    padding: 0;
+  }
+  .home-header {
+    padding: 56px 24px 28px;
+    background: linear-gradient(160deg, #1a1a2e 0%, #2d3561 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .home-header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -20px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+  }
+  .home-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 99px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: rgba(255,255,255,0.9);
+  }
+  .home-header h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 8px;
+    position: relative; z-index: 1;
+  }
+  .home-header p {
+    font-size: 17px;
+    color: rgba(255,255,255,0.7);
+    position: relative; z-index: 1;
+  }
+
+  .devices-section { padding: 20px 16px 32px; }
+  .devices-section h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+  .device-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .device-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 16px 18px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .device-card:active { transform: scale(0.96); box-shadow: none; }
+  .device-card.full-width { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; padding: 18px 20px; }
+  .device-card.full-width .device-label { font-size: 20px; }
+  .device-icon-wrap {
+    width: 72px; height: 72px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 16px;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .device-card.full-width .device-icon-wrap { width: 60px; height: 60px; }
+  .device-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+  }
+  .device-card.full-width .device-label { text-align: left; }
+  .device-chevron {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 20px;
+  }
+
+  /* ── ISSUES ── */
+  #screen-issues { padding-bottom: 24px; }
+  .issues-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .issue-row {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .issue-row:active { transform: scale(0.97); box-shadow: none; }
+  .issue-icon { font-size: 26px; flex-shrink: 0; }
+  .issue-text { flex: 1; }
+  .issue-text strong { display: block; font-size: 18px; font-weight: 700; color: var(--text); font-family: 'Nunito', sans-serif; }
+  .issue-text span { font-size: 14px; color: var(--text-muted); }
+  .issue-arrow { color: var(--text-muted); font-size: 18px; }
+
+  .not-found-row {
+    background: var(--orange-light);
+    border: 1.5px solid #ffe066;
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 14px;
+    transition: transform 0.12s;
+    margin-top: 4px;
+  }
+  .not-found-row:active { transform: scale(0.97); }
+  .not-found-row strong { font-size: 18px; font-weight: 700; color: #7d5a00; font-family: 'Nunito', sans-serif; }
+
+  .call-son-box {
+    background: var(--green-light);
+    border: 2px solid #69db7c;
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    margin: 0 16px 16px;
+    text-align: center;
+    animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .call-son-box .cs-icon { font-size: 52px; display: block; margin-bottom: 10px; }
+  .call-son-box h3 { font-family: 'Nunito', sans-serif; font-size: 26px; font-weight: 800; color: #1a6b2f; }
+  .call-son-box p { font-size: 16px; color: #2d8f48; margin-top: 4px; }
+
+  /* ── STEPS ── */
+  #screen-steps { padding-bottom: 100px; }
+  .steps-body { padding: 16px; flex: 1; }
+
+  .progress-wrap { padding: 12px 16px 0; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+  .progress-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+
+  .step-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 16px;
+  }
+  .step-visual {
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .step-visual svg { max-width: 100%; height: auto; }
+  .step-body { padding: 20px 20px 22px; }
+  .step-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .step-text {
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--text);
+    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .done-card {
+    background: linear-gradient(135deg, #ebfbee, #d3f9d8);
+    border: 2px solid #69db7c;
+    border-radius: var(--radius);
+    padding: 36px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .done-card .done-icon { font-size: 64px; display: block; margin-bottom: 12px; }
+  .done-card h3 { font-family: 'Nunito', sans-serif; font-size: 26px; font-weight: 800; color: #1a6b2f; }
+  .done-card p { font-size: 17px; color: #2d8f48; margin-top: 8px; line-height: 1.5; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 500px;
+    background: rgba(245,240,232,0.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    display: none;
+    gap: 10px;
+    z-index: 20;
+  }
+  .bottom-nav.visible { display: flex; }
+  .nav-btn {
+    flex: 1;
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    transition: transform 0.12s, background 0.12s;
+  }
+  .nav-btn:active { transform: scale(0.96); }
+  .nav-btn.secondary { background: var(--card); color: var(--text); }
+  .nav-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .nav-btn.primary:active { background: #2f4ccc; }
+  .nav-btn.success { background: var(--green); color: white; border-color: var(--green); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="home-header">
+      <div class="home-badge">🔧 Tech Helper</div>
+      <h1>What's Not Working?</h1>
+      <p>Tap the device giving you trouble</p>
+    </div>
+    <div class="devices-section">
+      <h2>Your Devices</h2>
+      <div class="device-grid">
+        <div class="device-card" onclick="selectDevice('appletv')">
+          <div class="device-icon-wrap">
+            <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Apple TV box -->
+              <rect x="6" y="28" width="40" height="14" rx="4" fill="#1c1c1e"/>
+              <rect x="10" y="32" width="32" height="6" rx="2" fill="#2c2c2e"/>
+              <circle cx="26" cy="35" r="2" fill="#48484a"/>
+              <!-- LED light -->
+              <circle cx="38" cy="33" r="1.5" fill="#30d158"/>
+              <!-- TV screen above -->
+              <rect x="4" y="8" width="44" height="28" rx="3" fill="#1c1c1e" opacity="0.15"/>
+              <rect x="6" y="10" width="40" height="24" rx="2" fill="#2c2c2e" opacity="0.2"/>
+            </svg>
+          </div>
+          <span class="device-label">Apple TV</span>
+        </div>
+
+        <div class="device-card" onclick="selectDevice('wifi')">
+          <div class="device-icon-wrap">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Router body -->
+              <rect x="8" y="30" width="40" height="16" rx="5" fill="#1c6ead"/>
+              <rect x="11" y="33" width="34" height="10" rx="3" fill="#1a5f96"/>
+              <!-- Antennas -->
+              <rect x="14" y="14" width="3" height="18" rx="1.5" fill="#1c6ead"/>
+              <rect x="24.5" y="10" width="3" height="22" rx="1.5" fill="#1c6ead"/>
+              <rect x="35" y="14" width="3" height="18" rx="1.5" fill="#1c6ead"/>
+              <!-- LEDs -->
+              <circle cx="16" cy="37" r="2" fill="#30d158"/>
+              <circle cx="22" cy="37" r="2" fill="#30d158"/>
+              <circle cx="28" cy="37" r="2" fill="#ffa500"/>
+              <circle cx="34" cy="37" r="2" fill="#30d158"/>
+              <circle cx="40" cy="37" r="2" fill="#48484a"/>
+            </svg>
+          </div>
+          <span class="device-label">Wi-Fi Router</span>
+        </div>
+
+        <div class="device-card" onclick="selectDevice('iphone')">
+          <div class="device-icon-wrap">
+            <svg width="42" height="58" viewBox="0 0 42 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Phone body -->
+              <rect x="1" y="1" width="40" height="56" rx="9" fill="#1c1c1e"/>
+              <rect x="3" y="3" width="36" height="52" rx="8" fill="#2c2c2e"/>
+              <!-- Screen -->
+              <rect x="4" y="7" width="34" height="44" rx="5" fill="#1a1a2e"/>
+              <!-- Dynamic Island -->
+              <rect x="15" y="9" width="12" height="5" rx="2.5" fill="#1c1c1e"/>
+              <!-- Home indicator -->
+              <rect x="15" y="48" width="12" height="2.5" rx="1.25" fill="#48484a"/>
+              <!-- Side buttons -->
+              <rect x="-1" y="15" width="2" height="8" rx="1" fill="#48484a"/>
+              <rect x="-1" y="25" width="2" height="6" rx="1" fill="#48484a"/>
+              <rect x="41" y="18" width="2" height="10" rx="1" fill="#48484a"/>
+            </svg>
+          </div>
+          <span class="device-label">iPhone / iPad</span>
+        </div>
+
+        <div class="device-card" onclick="selectDevice('ring')">
+          <div class="device-icon-wrap">
+            <svg width="44" height="56" viewBox="0 0 44 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Ring doorbell body -->
+              <rect x="4" y="4" width="36" height="48" rx="8" fill="#1c1c1e"/>
+              <rect x="6" y="6" width="32" height="44" rx="7" fill="#2c2c2e"/>
+              <!-- Camera lens area -->
+              <rect x="9" y="10" width="26" height="20" rx="4" fill="#1a1a2e"/>
+              <circle cx="22" cy="20" r="7" fill="#111"/>
+              <circle cx="22" cy="20" r="5" fill="#1a1a2e"/>
+              <circle cx="22" cy="20" r="3" fill="#222d45"/>
+              <circle cx="20.5" cy="18.5" r="1" fill="rgba(255,255,255,0.3)"/>
+              <!-- Ring logo -->
+              <circle cx="22" cy="37" r="6" fill="#1c1c1e" stroke="#1c6ead" stroke-width="2"/>
+              <circle cx="22" cy="37" r="3.5" fill="#1c6ead"/>
+              <!-- Motion light -->
+              <circle cx="33" cy="12" r="2" fill="#ffa500" opacity="0.8"/>
+            </svg>
+          </div>
+          <span class="device-label">Ring Camera</span>
+        </div>
+
+        <div class="device-card full-width" onclick="selectDevice('nest')">
+          <div class="device-icon-wrap">
+            <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Nest circle body -->
+              <circle cx="26" cy="26" r="24" fill="#1c1c1e"/>
+              <circle cx="26" cy="26" r="21" fill="#222"/>
+              <!-- Screen ring -->
+              <circle cx="26" cy="26" r="18" fill="#1a2a1a" stroke="#30d158" stroke-width="1.5"/>
+              <!-- Temperature display -->
+              <text x="26" y="24" text-anchor="middle" font-family="Helvetica, sans-serif" font-size="9" font-weight="bold" fill="#ffffff">72°</text>
+              <text x="26" y="33" text-anchor="middle" font-family="Helvetica, sans-serif" font-size="5" fill="#30d158">COOLING</text>
+              <!-- Outer ring accent -->
+              <circle cx="26" cy="26" r="23" fill="none" stroke="#30d158" stroke-width="1" stroke-dasharray="3 4" opacity="0.4"/>
+            </svg>
+          </div>
+          <span class="device-label">Nest Thermostat</span>
+          <span class="device-chevron">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISSUES -->
+  <div class="screen" id="screen-issues">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="back-btn" onclick="goHome()">←</div>
+        <span class="topbar-title" id="issues-title">What's wrong?</span>
+      </div>
+    </div>
+    <div class="issues-body" id="issue-list"></div>
+    <div id="call-son-box" style="display:none;"></div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="screen" id="screen-steps">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="back-btn" onclick="goBack()">←</div>
+        <span class="topbar-title" id="steps-title">Fixing it...</span>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-label">Step 1</span>
+        <span id="progress-count"></span>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+    </div>
+    <div class="steps-body" id="step-container"></div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav" id="bottom-nav">
+    <button class="nav-btn secondary" id="btn-prev" onclick="prevStep()">← Back</button>
+    <button class="nav-btn primary" id="btn-next" onclick="nextStep()">Next →</button>
+  </div>
+</div>
+
+<script>
+// ── SVG ILLUSTRATIONS ──
+const SVGs = {
+
+  power_cable: `<svg width="220" height="160" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="60" width="80" height="50" rx="8" fill="#1c1c1e"/>
+    <rect x="14" y="64" width="72" height="42" rx="6" fill="#2c2c2e"/>
+    <rect x="90" y="78" width="50" height="14" rx="3" fill="#444"/>
+    <rect x="140" y="72" width="60" height="26" rx="5" fill="#333"/>
+    <rect x="144" y="76" width="52" height="18" rx="3" fill="#1c1c1e"/>
+    <circle cx="150" cy="85" r="4" fill="#555"/>
+    <circle cx="164" cy="85" r="4" fill="#555"/>
+    <text x="110" y="130" text-anchor="middle" font-family="Nunito, sans-serif" font-size="13" fill="#6b6b80">Check the power cable is firmly plugged in</text>
+    <path d="M88 85 Q95 72 140 72" stroke="#ff6b6b" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+    <circle cx="88" cy="85" r="5" fill="#ff6b6b"/>
+    <text x="75" y="55" font-family="Nunito, sans-serif" font-size="11" fill="#ff6b6b" font-weight="bold">Check here!</text>
+  </svg>`,
+
+  tv_input: `<svg width="240" height="160" viewBox="0 0 240 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="20" width="160" height="100" rx="8" fill="#1c1c1e"/>
+    <rect x="24" y="24" width="152" height="92" rx="6" fill="#1a1a2e"/>
+    <rect x="24" y="24" width="152" height="92" rx="6" fill="url(#tvgrad)"/>
+    <defs><linearGradient id="tvgrad" x1="24" y1="24" x2="176" y2="116" gradientUnits="userSpaceOnUse"><stop stop-color="#0f3460"/><stop offset="1" stop-color="#1a1a2e"/></linearGradient></defs>
+    <rect x="28" y="28" width="144" height="20" rx="3" fill="rgba(255,255,255,0.05)"/>
+    <text x="100" y="42" text-anchor="middle" font-family="Helvetica" font-size="12" fill="white" font-weight="bold">HDMI 2 ✓</text>
+    <rect x="85" y="65" width="70" height="30" rx="4" fill="#3b5bdb" opacity="0.8"/>
+    <text x="120" y="84" text-anchor="middle" font-family="Helvetica" font-size="11" fill="white">INPUT / SOURCE</text>
+    <rect x="185" y="50" width="30" height="10" rx="3" fill="#444"/>
+    <text x="195" y="30" font-family="Nunito, sans-serif" font-size="11" fill="#ff6b6b" font-weight="bold">Press this</text>
+    <path d="M200 33 L200 48" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="3 2"/>
+  </svg>`,
+
+  restart: `<svg width="180" height="160" viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="90" cy="72" r="46" fill="#f0f4ff" stroke="#c5d0f0" stroke-width="1.5"/>
+    <path d="M90 34 A38 38 0 1 0 128 72" stroke="#3b5bdb" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <polygon points="122,52 136,58 128,68" fill="#3b5bdb"/>
+    <rect x="82" y="62" width="16" height="20" rx="2" fill="#1c1c1e"/>
+    <text x="90" y="134" text-anchor="middle" font-family="Nunito, sans-serif" font-size="14" fill="#6b6b80" font-weight="600">Unplug · Wait 10 sec · Plug in</text>
+  </svg>`,
+
+  wifi_bars: `<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 80 Q80 20 140 80" stroke="#e0d9ce" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M38 98 Q80 50 122 98" stroke="#e0d9ce" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M56 116 Q80 82 104 116" stroke="#3b5bdb" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <circle cx="80" cy="130" r="7" fill="#3b5bdb"/>
+    <text x="80" y="155" text-anchor="middle" font-family="Nunito, sans-serif" font-size="13" fill="#6b6b80">Weak signal — move closer</text>
+  </svg>`,
+
+  wifi_full: `<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 80 Q80 20 140 80" stroke="#30d158" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M38 98 Q80 50 122 98" stroke="#30d158" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M56 116 Q80 82 104 116" stroke="#30d158" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <circle cx="80" cy="130" r="7" fill="#30d158"/>
+  </svg>`,
+
+  iphone_settings: `<svg width="160" height="200" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="30" y="10" width="100" height="180" rx="16" fill="#1c1c1e"/>
+    <rect x="34" y="14" width="92" height="172" rx="14" fill="#2c2c2e"/>
+    <rect x="36" y="16" width="88" height="168" rx="12" fill="#1a1a2e"/>
+    <rect x="56" y="18" width="32" height="6" rx="3" fill="#1c1c1e"/>
+    <rect x="42" y="38" width="76" height="22" rx="5" fill="#2c2c2e"/>
+    <circle cx="52" cy="49" r="7" fill="#636366"/>
+    <text x="65" y="53" font-family="Helvetica" font-size="9" fill="white">Settings</text>
+    <rect x="42" y="66" width="76" height="16" rx="3" fill="#1c6ead" opacity="0.6"/>
+    <text x="80" y="77" text-anchor="middle" font-family="Helvetica" font-size="8" fill="white">Messages ›</text>
+    <rect x="42" y="88" width="76" height="16" rx="3" fill="#2c2c2e"/>
+    <text x="80" y="99" text-anchor="middle" font-family="Helvetica" font-size="8" fill="#8e8e93">Do Not Disturb</text>
+    <rect x="42" y="110" width="76" height="16" rx="3" fill="#2c2c2e"/>
+    <text x="80" y="121" text-anchor="middle" font-family="Helvetica" font-size="8" fill="#8e8e93">iMessage    ON</text>
+  </svg>`,
+
+  dnd_off: `<svg width="200" height="160" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="30" width="160" height="100" rx="16" fill="#1c1c1e"/>
+    <rect x="24" y="34" width="152" height="92" rx="14" fill="#2c2c2e"/>
+    <text x="60" y="68" font-family="Helvetica" font-size="13" fill="white">Do Not Disturb</text>
+    <rect x="135" y="55" width="32" height="18" rx="9" fill="#636366"/>
+    <circle cx="145" cy="64" r="7" fill="white"/>
+    <text x="100" y="105" text-anchor="middle" font-family="Nunito, sans-serif" font-size="12" fill="#30d158">OFF = you can receive calls</text>
+    <path d="M60 120 L140 120" stroke="#30d158" stroke-width="2"/>
+  </svg>`,
+
+  silent_switch: `<svg width="160" height="200" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="30" y="20" width="80" height="160" rx="14" fill="#1c1c1e"/>
+    <rect x="34" y="24" width="72" height="152" rx="12" fill="#2c2c2e"/>
+    <!-- Silent switch -->
+    <rect x="8" y="50" width="8" height="28" rx="4" fill="#ff6b6b"/>
+    <text x="80" y="110" text-anchor="middle" font-family="Nunito, sans-serif" font-size="11" fill="white" font-weight="bold">Orange = Silent!</text>
+    <path d="M20 64 L28 64" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="2 2"/>
+    <text x="6" y="46" font-family="Nunito, sans-serif" font-size="9" fill="#ff6b6b">Flip this!</text>
+  </svg>`,
+
+  ring_camera: `<svg width="160" height="200" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="40" y="10" width="80" height="120" rx="12" fill="#1c1c1e"/>
+    <rect x="44" y="14" width="72" height="112" rx="10" fill="#2c2c2e"/>
+    <rect x="50" y="22" width="60" height="44" rx="6" fill="#1a1a2e"/>
+    <circle cx="80" cy="44" r="14" fill="#111"/>
+    <circle cx="80" cy="44" r="10" fill="#1a1a2e"/>
+    <circle cx="80" cy="44" r="6" fill="#0d1117"/>
+    <circle cx="77" cy="41" r="2" fill="rgba(255,255,255,0.25)"/>
+    <circle cx="80" cy="80" r="12" fill="#1c1c1e" stroke="#1c6ead" stroke-width="2"/>
+    <circle cx="80" cy="80" r="7" fill="#1c6ead"/>
+    <text x="80" y="152" text-anchor="middle" font-family="Nunito, sans-serif" font-size="12" fill="#1c6ead" font-weight="bold">Ring</text>
+    <!-- Signal waves -->
+    <path d="M105 30 Q115 44 105 58" stroke="#30d158" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M112 24 Q126 44 112 64" stroke="#30d158" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <text x="80" y="175" text-anchor="middle" font-family="Nunito, sans-serif" font-size="11" fill="#6b6b80">Camera online</text>
+  </svg>`,
+
+  battery_charge: `<svg width="200" height="160" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="50" width="140" height="60" rx="10" fill="#2c2c2e" stroke="#444" stroke-width="2"/>
+    <rect x="160" y="68" width="16" height="24" rx="4" fill="#444"/>
+    <rect x="24" y="54" width="60" height="52" rx="8" fill="#30d158"/>
+    <text x="100" y="135" text-anchor="middle" font-family="Nunito, sans-serif" font-size="13" fill="#6b6b80">Battery charging — orange = charging</text>
+    <!-- Lightning bolt -->
+    <path d="M90 65 L80 82 L90 82 L80 98 L100 78 L90 78 Z" fill="white" opacity="0.9"/>
+    <circle cx="160" cy="120" r="16" fill="#ffa500" opacity="0.3"/>
+    <circle cx="160" cy="120" r="8" fill="#ffa500"/>
+  </svg>`,
+
+  nest_display: `<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="80" r="72" fill="#1c1c1e"/>
+    <circle cx="80" cy="80" r="66" fill="#222"/>
+    <circle cx="80" cy="80" r="56" fill="#1a2a1a"/>
+    <circle cx="80" cy="80" r="56" stroke="#30d158" stroke-width="2.5" fill="none"/>
+    <text x="80" y="68" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#8e8e93">CURRENT</text>
+    <text x="80" y="88" text-anchor="middle" font-family="Helvetica" font-size="28" fill="white" font-weight="bold">72°</text>
+    <text x="80" y="105" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#30d158">● COOLING</text>
+    <!-- Tick marks -->
+    <circle cx="80" cy="26" r="2" fill="#30d158"/>
+    <circle cx="80" cy="134" r="2" fill="#444"/>
+    <circle cx="26" cy="80" r="2" fill="#444"/>
+    <circle cx="134" cy="80" r="2" fill="#444"/>
+  </svg>`,
+
+  router_restart: `<svg width="220" height="160" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="30" y="60" width="120" height="50" rx="10" fill="#1c6ead"/>
+    <rect x="34" y="64" width="112" height="42" rx="8" fill="#1a5f96"/>
+    <rect x="40" y="14" width="8" height="50" rx="4" fill="#1c6ead"/>
+    <rect x="76" y="8" width="8" height="56" rx="4" fill="#1c6ead"/>
+    <rect x="112" y="14" width="8" height="50" rx="4" fill="#1c6ead"/>
+    <circle cx="50" cy="82" r="5" fill="#30d158"/>
+    <circle cx="66" cy="82" r="5" fill="#30d158"/>
+    <circle cx="82" cy="82" r="5" fill="#ffa500"/>
+    <circle cx="98" cy="82" r="5" fill="#30d158"/>
+    <circle cx="114" cy="82" r="5" fill="#ff4444"/>
+    <text x="90" y="130" text-anchor="middle" font-family="Nunito, sans-serif" font-size="12" fill="#6b6b80">Unplug · Wait 30 sec · Plug in</text>
+    <path d="M165 80 A20 20 0 1 0 185 60" stroke="#3b5bdb" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <polygon points="182,52 190,62 178,64" fill="#3b5bdb"/>
+  </svg>`,
+
+  airdrop: `<svg width="200" height="160" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="15" y="30" width="60" height="100" rx="10" fill="#1c1c1e"/>
+    <rect x="18" y="33" width="54" height="94" rx="9" fill="#2c2c2e"/>
+    <rect x="125" y="30" width="60" height="100" rx="10" fill="#1c1c1e"/>
+    <rect x="128" y="33" width="54" height="94" rx="9" fill="#2c2c2e"/>
+    <!-- AirDrop waves between phones -->
+    <path d="M85 75 Q100 65 115 75" stroke="#1c6ead" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M88 85 Q100 78 112 85" stroke="#1c6ead" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M91 95 Q100 90 109 95" stroke="#1c6ead" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="100" cy="102" r="4" fill="#1c6ead"/>
+    <text x="100" y="145" text-anchor="middle" font-family="Nunito, sans-serif" font-size="12" fill="#1c6ead">Keep phones close together!</text>
+  </svg>`,
+
+  green_message: `<svg width="220" height="160" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="20" width="140" height="40" rx="16" fill="#3cb043"/>
+    <text x="80" y="38" text-anchor="middle" font-family="Helvetica" font-size="12" fill="white">Hey, can you come over?</text>
+    <text x="80" y="52" text-anchor="middle" font-family="Helvetica" font-size="10" fill="rgba(255,255,255,0.7)">SMS Text Message</text>
+    <rect x="60" y="80" width="150" height="40" rx="16" fill="#e0e0e0"/>
+    <text x="135" y="98" text-anchor="middle" font-family="Helvetica" font-size="12" fill="#1a1a2e">Sure! Be there at 3</text>
+    <text x="135" y="112" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#8e8e93">SMS Text Message</text>
+    <text x="110" y="148" text-anchor="middle" font-family="Nunito, sans-serif" font-size="12" fill="#3cb043" font-weight="bold">✓ Green = Still delivered!</text>
+  </svg>`,
+
+  volume_buttons: `<svg width="160" height="200" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="40" y="20" width="80" height="160" rx="14" fill="#1c1c1e"/>
+    <rect x="44" y="24" width="72" height="152" rx="12" fill="#2c2c2e"/>
+    <!-- Volume up button -->
+    <rect x="8" y="55" width="8" height="28" rx="4" fill="#3b5bdb"/>
+    <text x="0" y="50" font-family="Nunito, sans-serif" font-size="10" fill="#3b5bdb" font-weight="bold">VOL+</text>
+    <!-- Volume down button -->
+    <rect x="8" y="90" width="8" height="22" rx="4" fill="#636366"/>
+    <text x="0" y="120" font-family="Nunito, sans-serif" font-size="10" fill="#636366">VOL-</text>
+    <path d="M18 69 L36 69" stroke="#3b5bdb" stroke-width="1.5" stroke-dasharray="3 2"/>
+    <text x="80" y="175" text-anchor="middle" font-family="Nunito, sans-serif" font-size="11" fill="#6b6b80">Press upper button to raise volume</text>
+  </svg>`,
+
+  ring_app: `<svg width="200" height="160" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="60" y="10" width="80" height="140" rx="14" fill="#1c1c1e"/>
+    <rect x="64" y="14" width="72" height="132" rx="12" fill="#2c2c2e"/>
+    <rect x="66" y="16" width="68" height="128" rx="10" fill="#0d1117"/>
+    <!-- App header -->
+    <rect x="66" y="16" width="68" height="28" rx="10" fill="#1c1c1e"/>
+    <text x="100" y="34" text-anchor="middle" font-family="Helvetica" font-size="10" fill="white" font-weight="bold">Ring</text>
+    <!-- Camera feed -->
+    <rect x="68" y="50" width="64" height="44" rx="4" fill="#0a1628"/>
+    <circle cx="100" cy="72" r="12" fill="rgba(28,110,173,0.3)"/>
+    <circle cx="100" cy="72" r="6" fill="#1c6ead" opacity="0.7"/>
+    <text x="100" y="108" text-anchor="middle" font-family="Helvetica" font-size="8" fill="#30d158">● Live View</text>
+  </svg>`,
+
+  nest_wifi: `<svg width="220" height="160" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="80" r="56" fill="#1c1c1e"/>
+    <circle cx="80" cy="80" r="50" fill="#222"/>
+    <text x="80" y="76" text-anchor="middle" font-family="Helvetica" font-size="13" fill="white" font-weight="bold">72°</text>
+    <text x="80" y="94" text-anchor="middle" font-family="Helvetica" font-size="9" fill="#ff6b6b">OFFLINE</text>
+    <circle cx="80" cy="80" r="56" stroke="#ff6b6b" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
+    <!-- Arrow to router -->
+    <path d="M136 80 L158 80" stroke="#6b6b80" stroke-width="2" stroke-dasharray="4 3"/>
+    <polygon points="155,76 163,80 155,84" fill="#6b6b80"/>
+    <rect x="160" y="56" width="50" height="32" rx="6" fill="#1c6ead"/>
+    <text x="185" y="76" text-anchor="middle" font-family="Helvetica" font-size="9" fill="white">Router</text>
+    <text x="110" y="130" text-anchor="middle" font-family="Nunito, sans-serif" font-size="11" fill="#ff6b6b">Reconnect Nest to Wi-Fi</text>
+  </svg>`,
+};
+
+// ── DATA ──
+const DATA = {
+  appletv: {
+    label: "Apple TV",
+    issues: [
+      { label: "Won't turn on", hint: "No picture, black screen", icon: "🔌",
+        steps: [
+          { text: "Make sure the power cable is firmly plugged into the back of the Apple TV and into the wall.", svg: SVGs.power_cable },
+          { text: "Check your TV is ON and set to the correct HDMI input — try pressing Input or Source on your TV remote.", svg: SVGs.tv_input },
+          { text: "Unplug the Apple TV power cable, wait 10 seconds, then plug it back in.", svg: SVGs.restart },
+          { text: "Try a different wall outlet. Sometimes outlets stop working unexpectedly.", svg: SVGs.restart },
+        ]
+      },
+      { label: "Won't connect to Wi-Fi", hint: "Spinning, can't load apps", icon: "📡",
+        steps: [
+          { text: "On your Apple TV, go to Settings (the gear icon) → Network and check if your Wi-Fi is listed.", svg: SVGs.wifi_bars },
+          { text: "Restart your Wi-Fi router — unplug it, wait 30 seconds, then plug it back in. Wait 1 full minute.", svg: SVGs.router_restart },
+          { text: "Check your phone can connect to Wi-Fi. If your phone also can't connect, call your internet provider.", svg: SVGs.wifi_full },
+          { text: "On Apple TV go to Settings → Network → Wi-Fi, then tap your home network and enter the password.", svg: SVGs.iphone_settings },
+        ]
+      },
+      { label: "HDMI error / black screen", hint: "No signal on TV", icon: "🖥️",
+        steps: [
+          { text: "Push the HDMI cable firmly into both the Apple TV and the TV — give it a firm push until it clicks.", svg: SVGs.power_cable },
+          { text: "Press the Input or Source button on your TV remote and cycle through until you see the Apple TV screen.", svg: SVGs.tv_input },
+          { text: "Try plugging the HDMI cable into a different HDMI port on your TV. Most TVs have 2 or 3.", svg: SVGs.tv_input },
+          { text: "Restart the Apple TV — unplug the power cord, wait 10 seconds, and plug it back in.", svg: SVGs.restart },
+        ]
+      },
+    ]
+  },
+  wifi: {
+    label: "Wi-Fi",
+    issues: [
+      { label: "Nothing is loading", hint: "Pages won't open", icon: "🌐",
+        steps: [
+          { text: "Swipe down from the top of your phone and check that the Wi-Fi symbol is solid (not grayed out).", svg: SVGs.wifi_bars },
+          { text: "Make sure you're on YOUR home network. Tap the Wi-Fi symbol to see which network you're connected to.", svg: SVGs.iphone_settings },
+          { text: "Restart your Wi-Fi router — find the box with blinking lights, unplug it, wait 30 seconds, plug it back in.", svg: SVGs.router_restart },
+          { text: "Restart your phone by holding the side button, then sliding to power off. Turn it back on after 30 seconds.", svg: SVGs.restart },
+        ]
+      },
+      { label: "Wi-Fi not working at all", hint: "All devices disconnected", icon: "❌",
+        steps: [
+          { text: "Find your Wi-Fi router and check all its lights are on — you need to see at least a solid green or white light.", svg: SVGs.router_restart },
+          { text: "Unplug the router from the wall, wait a full 30 seconds, then plug it back in. Wait 2 minutes.", svg: SVGs.restart },
+          { text: "On your phone, go to Settings → Wi-Fi and make sure Wi-Fi is switched ON.", svg: SVGs.iphone_settings },
+          { text: "Tap your home network name to reconnect. The password is usually on a sticker on the bottom of the router.", svg: SVGs.wifi_full },
+          { text: "If no devices in the house can connect, call your internet provider — the outage may be on their end.", svg: SVGs.router_restart },
+        ]
+      },
+    ]
+  },
+  iphone: {
+    label: "iPhone / iPad",
+    issues: [
+      { label: "Not receiving calls", hint: "Calls going straight to voicemail", icon: "📵",
+        steps: [
+          { text: "Look for a crescent moon at the top of your screen. If you see it, Do Not Disturb is ON — swipe down and tap the moon to turn it off.", svg: SVGs.dnd_off },
+          { text: "Check the small switch on the LEFT side of your iPhone. If it shows orange, your phone is on SILENT — flip it the other way.", svg: SVGs.silent_switch },
+          { text: "Look at the signal bars in the top corner. No bars means no service — try moving closer to a window.", svg: SVGs.wifi_bars },
+          { text: "Restart your phone by holding the side button + volume down until you see 'Slide to Power Off'.", svg: SVGs.restart },
+        ]
+      },
+      { label: "Messages not coming through", hint: "Texts delayed or missing", icon: "💬",
+        steps: [
+          { text: "Check your signal bars and Wi-Fi — messages need either a cell signal or Wi-Fi to arrive.", svg: SVGs.wifi_bars },
+          { text: "Go to Settings → Messages and make sure both iMessage and SMS/MMS are switched ON.", svg: SVGs.iphone_settings },
+          { text: "Restart your iPhone — hold the side button and volume down, then slide to power off. Turn it back on.", svg: SVGs.restart },
+          { text: "Check if the other person is also having trouble sending messages — it might be on their end.", svg: SVGs.green_message },
+        ]
+      },
+      { label: "Messages are green (not blue)", hint: "Green bubbles instead of blue", icon: "🟩",
+        steps: [
+          { text: "Don't worry — green messages (SMS) still arrive fine! They're just regular text messages, not iMessages.", svg: SVGs.green_message },
+          { text: "Blue = iMessage (needs internet). Green = SMS (uses cell service). Both work — just different routes.", svg: SVGs.green_message },
+          { text: "To try to restore blue messages: go to Settings → Messages, toggle iMessage OFF, wait 5 seconds, toggle it back ON.", svg: SVGs.iphone_settings },
+          { text: "If messages stay green, that's perfectly fine — they're still being delivered to the other person!", svg: SVGs.green_message },
+        ]
+      },
+      { label: "Volume issues", hint: "Can't hear calls or sounds", icon: "🔊",
+        steps: [
+          { text: "Press the upper volume button on the LEFT side of your iPhone to raise the volume.", svg: SVGs.volume_buttons },
+          { text: "Check the small switch on the LEFT side — if it shows orange, your phone is on SILENT. Flip it away from the screen.", svg: SVGs.silent_switch },
+          { text: "Go to Settings → Sounds & Haptics and move the Ringer and Alerts slider all the way to the right.", svg: SVGs.iphone_settings },
+          { text: "If you're on a call and can't hear, tap the Speaker button on the call screen to switch to speakerphone.", svg: SVGs.iphone_settings },
+        ]
+      },
+      { label: "AirDrop not working", hint: "Can't share photos or files", icon: "🔁",
+        steps: [
+          { text: "Make sure both phones are within 10 feet of each other — AirDrop needs to be very close.", svg: SVGs.airdrop },
+          { text: "Swipe down from the top right and make sure both Bluetooth and Wi-Fi are ON (blue).", svg: SVGs.iphone_settings },
+          { text: "Go to Settings → General → AirDrop. Set it to 'Everyone for 10 Minutes'.", svg: SVGs.iphone_settings },
+          { text: "Tap the Share button (the box with an arrow pointing up), then look for the other person's name under AirDrop.", svg: SVGs.airdrop },
+        ]
+      },
+    ]
+  },
+  ring: {
+    label: "Ring Camera",
+    issues: [
+      { label: "Can't see the video", hint: "Live view won't load", icon: "📷",
+        steps: [
+          { text: "Open the Ring app and tap on your camera. If it spins forever, your camera may have lost Wi-Fi.", svg: SVGs.ring_app },
+          { text: "Check your Ring camera has a solid light on the front. Blinking = lost connection. No light = no power.", svg: SVGs.ring_camera },
+          { text: "Restart your Wi-Fi router — unplug it, wait 30 seconds, plug it back in. Wait 1–2 minutes.", svg: SVGs.router_restart },
+          { text: "Press and hold the orange button on the back of your Ring camera for 10 seconds to restart it.", svg: SVGs.ring_camera },
+        ]
+      },
+      { label: "Battery not charging", hint: "Battery level not going up", icon: "🔋",
+        steps: [
+          { text: "Make sure the charging cable clicks firmly into the port on the battery — it should feel snug.", svg: SVGs.battery_charge },
+          { text: "Plug the other end into a working wall outlet. Try a different outlet to rule out a dead socket.", svg: SVGs.power_cable },
+          { text: "Look for a small LED on the battery: orange/red = charging, green = fully charged, no light = problem.", svg: SVGs.battery_charge },
+          { text: "Charging takes 4–12 hours depending on how drained it is. Leave it plugged in and check after a few hours.", svg: SVGs.battery_charge },
+        ]
+      },
+    ]
+  },
+  nest: {
+    label: "Nest Thermostat",
+    issues: [
+      { label: "Says 'Offline'", hint: "App says disconnected", icon: "❌",
+        steps: [
+          { text: "The Nest says offline when it loses Wi-Fi. First, check that your Wi-Fi router is working — try loading a page on your phone.", svg: SVGs.nest_wifi },
+          { text: "Restart your Wi-Fi router — unplug it, wait 30 seconds, plug it back in. Wait 2 minutes.", svg: SVGs.router_restart },
+          { text: "On the Nest display, press the ring and go to Settings → Network to see if your Wi-Fi is listed.", svg: SVGs.nest_display },
+          { text: "If needed, go to Settings → Network and reconnect to your home Wi-Fi. You'll need the Wi-Fi password.", svg: SVGs.nest_wifi },
+        ]
+      },
+      { label: "App not showing thermostat", hint: "Nest missing from Google Home", icon: "📱",
+        steps: [
+          { text: "Open the Google Home app. Make sure you're signed into the same Google account used to set up your Nest.", svg: SVGs.iphone_settings },
+          { text: "Close the app completely and reopen it. On iPhone: swipe up from the bottom, swipe the app away, then reopen.", svg: SVGs.restart },
+          { text: "Check your phone's internet connection — try opening a website to confirm Wi-Fi is working.", svg: SVGs.wifi_full },
+          { text: "If the Nest shows 'offline' in the app, follow the 'Says Offline' guide — the Nest may have lost Wi-Fi.", svg: SVGs.nest_wifi },
+        ]
+      },
+    ]
+  }
+};
+
+// ── STATE ──
+let currentDevice = null;
+let currentSteps = [];
+let currentStep = 0;
+
+function goHome() {
+  showScreen('home');
+  document.getElementById('bottom-nav').classList.remove('visible');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function selectDevice(id) {
+  currentDevice = id;
+  const dev = DATA[id];
+  document.getElementById('issues-title').textContent = dev.label;
+  const list = document.getElementById('issue-list');
+  list.innerHTML = '';
+  document.getElementById('call-son-box').style.display = 'none';
+
+  dev.issues.forEach((issue, i) => {
+    const row = document.createElement('div');
+    row.className = 'issue-row';
+    row.innerHTML = `<span class="issue-icon">${issue.icon}</span>
+      <div class="issue-text"><strong>${issue.label}</strong><span>${issue.hint || ''}</span></div>
+      <span class="issue-arrow">›</span>`;
+    row.onclick = () => selectIssue(i);
+    list.appendChild(row);
+  });
+
+  const notFound = document.createElement('div');
+  notFound.className = 'not-found-row';
+  notFound.innerHTML = `<span style="font-size:24px">🤷</span><strong>My issue isn't listed here</strong>`;
+  notFound.onclick = showCallSon;
+  list.appendChild(notFound);
+
+  document.getElementById('bottom-nav').classList.remove('visible');
+  showScreen('issues');
+}
+
+function selectIssue(index) {
+  const issue = DATA[currentDevice].issues[index];
+  currentSteps = issue.steps;
+  currentStep = 0;
+  document.getElementById('steps-title').textContent = issue.label;
+  renderStep();
+  document.getElementById('bottom-nav').classList.add('visible');
+  showScreen('steps');
+}
+
+function renderStep() {
+  const total = currentSteps.length;
+  const pct = Math.min(((currentStep + 1) / total) * 100, 100);
+
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = currentStep >= total ? 'All done!' : `Step ${currentStep + 1} of ${total}`;
+  document.getElementById('progress-count').textContent = `${Math.min(currentStep + 1, total)} / ${total}`;
+
+  const container = document.getElementById('step-container');
+
+  if (currentStep >= total) {
+    container.innerHTML = `<div class="done-card">
+      <span class="done-icon">✅</span>
+      <h3>Hopefully that fixed it!</h3>
+      <p>If it's still not working, tap ← Back and try a different option — or call your son! 😄</p>
+    </div>`;
+    document.getElementById('btn-next').textContent = 'Start Over';
+    document.getElementById('btn-next').className = 'nav-btn success';
+    document.getElementById('btn-prev').style.display = 'none';
+    return;
+  }
+
+  const step = currentSteps[currentStep];
+  document.getElementById('btn-next').textContent = currentStep === total - 1 ? 'Finish ✓' : 'Next →';
+  document.getElementById('btn-next').className = 'nav-btn primary';
+  document.getElementById('btn-prev').style.display = currentStep === 0 ? 'none' : '';
+
+  container.innerHTML = `<div class="step-card">
+    <div class="step-visual">${step.svg || ''}</div>
+    <div class="step-body">
+      <div class="step-num">Step ${currentStep + 1} of ${total}</div>
+      <div class="step-text">${step.text}</div>
+    </div>
+  </div>`;
+}
+
+function nextStep() {
+  if (currentStep >= currentSteps.length) { goHome(); return; }
+  currentStep++;
+  renderStep();
+  document.querySelector('#screen-steps').scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function prevStep() {
+  if (currentStep > 0) { currentStep--; renderStep(); }
+}
+
+function goBack() {
+  document.getElementById('bottom-nav').classList.remove('visible');
+  showScreen('issues');
+}
+
+function showCallSon() {
+  const box = document.getElementById('call-son-box');
+  if (box.style.display !== 'none') { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = `<div class="call-son-box">
+    <span class="cs-icon">📞</span>
+    <h3>Call your son!</h3>
+    <p>He'll know exactly what to do 😊</p>
+  </div>`;
+  box.scrollIntoView({ behavior: 'smooth' });
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
