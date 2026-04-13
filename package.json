@@ -1,0 +1,14 @@
+{
+  "name": "whats-not-working",
+  "version": "1.0.0",
+  "description": "Simple tech troubleshooting app for non-technical users",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}
